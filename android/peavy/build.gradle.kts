@@ -7,12 +7,18 @@ android {
     namespace = "no.magnm.peavy"
     compileSdk = 34
 
+    version = "1.0.0"
+
     defaultConfig {
         minSdk = 21
+        buildConfigField("String", "VERSION", "\"${version}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -25,6 +31,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -34,7 +41,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.okhttp)
+
+    coreLibraryDesugaring(libs.desugar)
 }
