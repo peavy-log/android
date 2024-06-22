@@ -1,4 +1,4 @@
-package no.magnm.peavy
+package peavy
 
 import android.util.Log
 

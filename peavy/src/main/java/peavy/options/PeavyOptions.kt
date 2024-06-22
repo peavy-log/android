@@ -1,6 +1,6 @@
-package no.magnm.peavy.options
+package peavy.options
 
-import no.magnm.peavy.constants.LogLevel
+import peavy.constants.LogLevel
 import java.net.URL
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days

@@ -1,4 +1,4 @@
-package no.magnm.peavy.constants
+package peavy.constants
 
 enum class LogLevel(int: Int) {
     Trace(1),

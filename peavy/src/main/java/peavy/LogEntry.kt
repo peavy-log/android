@@ -1,7 +1,7 @@
-package no.magnm.peavy
+package peavy
 
-import no.magnm.peavy.constants.LogLevel
-import no.magnm.peavy.exceptions.VerbosityException
+import peavy.constants.LogLevel
+import peavy.exceptions.VerbosityException
 import org.json.JSONObject
 import java.time.Instant
 import kotlin.properties.Delegates

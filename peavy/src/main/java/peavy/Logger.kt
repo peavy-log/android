@@ -1,9 +1,9 @@
-package no.magnm.peavy
+package peavy
 
 import android.content.Context
 import android.os.Build
-import no.magnm.peavy.exceptions.VerbosityException
-import no.magnm.peavy.options.PeavyOptions
+import peavy.exceptions.VerbosityException
+import peavy.options.PeavyOptions
 
 internal class Logger(
     context: Context,

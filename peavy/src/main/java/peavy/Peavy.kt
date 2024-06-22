@@ -1,9 +1,9 @@
-package no.magnm.peavy
+package peavy
 
 import android.content.Context
-import no.magnm.peavy.constants.LogLevel
-import no.magnm.peavy.exceptions.Internal
-import no.magnm.peavy.options.PeavyOptions
+import peavy.constants.LogLevel
+import peavy.exceptions.Internal
+import peavy.options.PeavyOptions
 
 object Peavy {
     private lateinit var logger: Logger

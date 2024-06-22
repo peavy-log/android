@@ -1,5 +1,5 @@
-package no.magnm.peavy.exceptions
+package peavy.exceptions
 
-import no.magnm.peavy.constants.LogLevel
+import peavy.constants.LogLevel
 
 internal class VerbosityException(val level: LogLevel?, val minimum: LogLevel) : Exception()

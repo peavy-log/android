@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "no.magnm.peavy"
+    namespace = "peavy"
     compileSdk = 34
 
     version = "1.0.0"

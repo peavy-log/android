@@ -1,6 +1,6 @@
-package no.magnm.peavy.exceptions
+package peavy.exceptions
 
-import no.magnm.peavy.Peavy
+import peavy.Peavy
 
 internal object Internal {
     fun attachUncaughtHandler() {
