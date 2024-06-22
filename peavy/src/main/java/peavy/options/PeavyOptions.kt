@@ -19,6 +19,15 @@ data class PeavyOptions(
      */
     val logLevel: LogLevel = LogLevel.Info,
     /**
+     * Enable Peavy to also print the log line to stdout
+     * (using builtin android.Log)
+     *
+     * If Peavy is being used directly from within code
+     * (ie. not through f.ex. Timber), then you probably want
+     * this enabled in debug builds.
+     */
+    val printToStdout: Boolean = false,
+    /**
      * Whether to enable library debug mode.
      * This enables logging (to stdout only) of local Peavy actions
      *

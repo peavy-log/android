@@ -2,6 +2,8 @@ package peavy
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import peavy.constants.LogLevel
 import peavy.exceptions.VerbosityException
 import peavy.options.PeavyOptions
 
@@ -20,6 +22,9 @@ internal class Logger(
     fun log(closure: LogEntryBuilder.() -> Unit) {
         val entry = buildEntry(closure) ?: return
         storage.storeEntry(entry)
+        if (options.printToStdout) {
+            logToStdout(entry)
+        }
     }
 
     private fun buildEntry(closure: LogEntryBuilder.() -> Unit) = try {
@@ -32,6 +37,14 @@ internal class Logger(
     } catch (e: VerbosityException) {
         Debug.log("Discarded log line with level ${e.level} due to verbosity level (${e.minimum})")
         null
+    }
+
+    private fun logToStdout(entry: LogEntry) = when (entry.level) {
+        LogLevel.Trace -> Log.v(null, entry.message)
+        LogLevel.Debug -> Log.d(null, entry.message)
+        LogLevel.Info -> Log.i(null, entry.message)
+        LogLevel.Warning -> Log.w(null, entry.message)
+        LogLevel.Error -> Log.e(null, entry.message)
     }
 
     private fun generateGlobalLabels(context: Context) {
