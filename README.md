@@ -39,26 +39,11 @@ class BaseApplication: Application() {
             endpoint = URL("https://my-endpoint.com"),
             logLevel = LogLevel.Debug,
         ))
+
+        // If using Timber too, import and plant a tree:
+        Timber.plant(PeavyTree())
     }
 }
-```
-
-If using Timber, plant a PeavyTree:
-
-```kotlin
-class PeavyTree : Timber.Tree() {
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        when (priority) {
-            Log.INFO -> Peavy.i(message, t)
-            Log.VERBOSE -> Peavy.d(message, t)
-            Log.DEBUG -> Peavy.d(message, t)
-            Log.WARN -> Peavy.w(message, t)
-            Log.ERROR -> Peavy.e(message, t)
-        }
-    }
-}
-
-Timber.plant(PeavyTree())
 ```
 
 ### Logging

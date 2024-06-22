@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
+    compileOnly(libs.timber)
 
     coreLibraryDesugaring(libs.desugar)
 }
