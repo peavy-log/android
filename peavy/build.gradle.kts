@@ -1,5 +1,6 @@
 plugins {
     id("com.android.library")
+    id("maven-publish")
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
@@ -7,7 +8,7 @@ android {
     namespace = "peavy"
     compileSdk = 34
 
-    version = "1.0.0"
+    version = "0.9.4"
 
     defaultConfig {
         minSdk = 21
@@ -28,6 +29,11 @@ android {
             )
         }
     }
+
+    publishing {
+        singleVariant("release")
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -37,6 +43,20 @@ android {
         jvmTarget = "17"
     }
     buildToolsVersion = "34.0.0"
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.peavy-log"
+            artifactId = "android"
+            version = "0.9.4"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
 
 dependencies {
