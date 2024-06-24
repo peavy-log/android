@@ -8,7 +8,7 @@ android {
     namespace = "peavy"
     compileSdk = 34
 
-    version = "0.9.5"
+    version = "0.9.6"
 
     defaultConfig {
         minSdk = 21
@@ -48,7 +48,7 @@ android {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "local.github.peavy-log"
+            groupId = "com.github.peavy-log"
             artifactId = "android"
             version = project.version.toString()
             afterEvaluate {
@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
     compileOnly(libs.timber)
+    compileOnly(libs.okhttp)
 
     coreLibraryDesugaring(libs.desugar)
 }

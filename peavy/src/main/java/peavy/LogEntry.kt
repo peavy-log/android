@@ -11,7 +11,7 @@ internal data class LogEntry(
     val level: LogLevel,
     val message: String,
     val throwable: Throwable? = null,
-    val json: Map<String, JSONObject>? = null,
+    val json: Map<String, Any?>? = null,
     val labels: MutableMap<String, Any?> = mutableMapOf(),
 ) {
     fun toJson() = JSONObject().apply {
@@ -27,7 +27,6 @@ internal data class LogEntry(
             }
         }
         put("peavy/labels", jsonLabels)
-
 
         put("timestamp", timestamp.toString())
         put("severity", level.stringValue)
@@ -49,7 +48,7 @@ class LogEntryBuilder(private val minimumLevel: LogLevel) {
     }
     var message: String = ""
     var throwable: Throwable? = null
-    var json: Map<String, JSONObject>? = null
+    var json: Map<String, Any>? = null
 
     internal fun build() = LogEntry(
         timestamp = Instant.now(),

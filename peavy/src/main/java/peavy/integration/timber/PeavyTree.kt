@@ -1,6 +1,7 @@
-package peavy
+package peavy.integration.timber
 
 import android.util.Log
+import peavy.Peavy
 import timber.log.Timber
 
 class PeavyTree : Timber.Tree() {
