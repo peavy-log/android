@@ -8,7 +8,7 @@ android {
     namespace = "peavy"
     compileSdk = 34
 
-    version = "0.9.4"
+    version = "0.9.5"
 
     defaultConfig {
         minSdk = 21
@@ -22,7 +22,7 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -48,10 +48,9 @@ android {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "com.github.peavy-log"
+            groupId = "local.github.peavy-log"
             artifactId = "android"
-            version = "0.9.4"
-
+            version = project.version.toString()
             afterEvaluate {
                 from(components["release"])
             }
