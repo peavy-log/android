@@ -7,7 +7,8 @@ Remote logger and tracer library for Android.
 1. Add the JitPack repository to `repositories` in the project gradle:
 
     ```groovy
-    buildscript {
+    dependencyResolutionManagement {
+        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
         repositories {
             maven { url 'https://jitpack.io' }
         }
