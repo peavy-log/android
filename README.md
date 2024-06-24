@@ -78,3 +78,11 @@ Peavy.log {
 ```
 
 `someExpensiveMessage()` will not be executed unless the global log level is `Trace`. 
+
+### Metadata
+
+To automatically add metadata to log lines, use `Peavy.setMeta()`:
+
+```kotlin
+Peavy.setMeta("userId" to myUser.id)
+```
