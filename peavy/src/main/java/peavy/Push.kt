@@ -7,11 +7,11 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import peavy.options.PeavyOptions
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import peavy.options.PeavyOptions
 import java.io.File
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -50,8 +50,13 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
 
     private suspend fun prepare(): Boolean {
         return if (storage.hasCurrentEntries()) {
-            storage.endCurrentFile()
-            true
+            try {
+                storage.endCurrentFile()
+                true
+            } catch (e: Exception) {
+                Debug.warn("Error rolling current", e)
+                false
+            }
         } else {
             false
         }
@@ -61,7 +66,11 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
         var failures = 0
         storage.iterEndedFiles {
             if (push(it)) {
-                it.delete()
+                try {
+                    it.delete()
+                } catch (e: Exception) {
+                    Debug.warn("Error deleting file", e)
+                }
             } else {
                 failures += 1
             }

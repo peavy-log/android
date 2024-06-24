@@ -17,6 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class Storage(context: Context) {
     companion object {
+        const val MIN_AVAILABLE_SPACE = 768 * 1024 * 1024 // 768 MB
         const val MAX_FILE_SIZE = 1024 * 1024 // 1 MB
         const val MAX_COMPACTED_SIZE = 1024 * 100 // 100 kB
     }
@@ -25,7 +26,7 @@ internal class Storage(context: Context) {
     private val bufferMutex = Mutex()
     private val endedMutex = Mutex()
 
-    private val directory = File(context.filesDir, "peavy").also {
+    private val directory = File(context.filesDir, ".peavy").also {
         it.mkdirs()
     }
 
@@ -125,13 +126,22 @@ internal class Storage(context: Context) {
 
         Debug.log("Flushing ${entries.size} log entries")
 
+        if (directory.usableSpace < MIN_AVAILABLE_SPACE) {
+            Debug.warn("Not enough available space, dropping")
+            return
+        }
+
         currentMutex.withLock {
-            FileWriter(requireCurrentFile(), true).use {
-                for (entry in entries) {
-                    it.write(entry.toJson().toString())
-                    it.write("\n")
+            try {
+                FileWriter(requireCurrentFile(), true).use {
+                    for (entry in entries) {
+                        it.write(entry.toJson().toString())
+                        it.write("\n")
+                    }
+                    Debug.log("Flushed ${entries.size} entries")
                 }
-                Debug.log("Flushed ${entries.size} entries")
+            } catch (e: Exception) {
+                Debug.warn("Error flushing", e)
             }
         }
     }
@@ -143,12 +153,20 @@ internal class Storage(context: Context) {
             Debug.log("Current file size: ${currentFile.length()}")
             if (currentFile.length() > MAX_FILE_SIZE) {
                 Debug.log("Above max size, rolling")
-                endCurrentFile()
+                try {
+                    endCurrentFile()
+                } catch (e: Exception) {
+                    Debug.warn("Error rolling current", e)
+                }
             }
 
             if (listEndedFiles().size > 20) {
                 Debug.log("More than 20 ended files, compacting")
-                compactEndedFiles()
+                try {
+                    compactEndedFiles()
+                } catch (e: Exception) {
+                    Debug.warn("Error compacting", e)
+                }
             }
         }
     }
