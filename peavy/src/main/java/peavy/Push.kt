@@ -84,6 +84,7 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
         val request = Request.Builder()
             .url(options.endpoint)
             .header("Content-Encoding", "gzip")
+            .header("Peavy-Log", "true")
             .post(file.asRequestBody(ndjson))
             .build()
         val response = try {

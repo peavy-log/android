@@ -19,7 +19,7 @@ Remote logger and tracer library for Android.
 
     ```groovy
     dependencies {
-         implementation 'com.github.peavy-log:android:0.9.6'
+         implementation 'com.github.peavy-log:android:0.9.7'
     }
     ```
 
@@ -85,4 +85,30 @@ To automatically add metadata to log lines, use `Peavy.setMeta()`:
 
 ```kotlin
 Peavy.setMeta("userId" to myUser.id)
+```
+
+### Network Traces
+
+To automatically get tracing on network calls, which - with cooperation from the backend -
+will correlate frontend requests with backend logs, add the included `PeavyTracingInterceptor` OkHttp interceptor:
+
+```kotlin
+val client = OkHttpClient.Builder()
+   .addInterceptor(PeavyTracingInterceptor())
+   .build()
+```
+
+Depending on backend, a different implementation of tracing data might be required.
+
+You can implement your own by subclassing the `PeavyTracing` class and implementing its methods.
+
+The default implementation is generic W3C.
+
+Also available is a Google Cloud specific one, which in addition to adding W3C headers,
+also adds legacy GC-specific data.
+
+```kotlin
+val client = OkHttpClient.Builder()
+   .addInterceptor(PeavyTracingInterceptor(tracer = PeavyTracing.GoogleCloud))
+   .build()
 ```
