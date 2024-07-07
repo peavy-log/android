@@ -7,10 +7,13 @@ import peavy.exceptions.Internal
 import peavy.options.PeavyOptions
 
 object Peavy {
-    private lateinit var logger: Logger
+    internal lateinit var logger: Logger
     internal lateinit var storage: Storage
-    private lateinit var push: Push
+    internal lateinit var push: Push
     private lateinit var prefs: SharedPreferences
+
+    var isInitialized: Boolean = false
+        private set
 
     fun init(context: Context, options: PeavyOptions) {
         Debug.enabled = options.debug
@@ -22,6 +25,8 @@ object Peavy {
 
         Internal.attachUncaughtHandler()
         restoreMeta()
+
+        isInitialized = true
     }
 
     fun clearMeta() {

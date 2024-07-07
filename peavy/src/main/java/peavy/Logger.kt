@@ -27,7 +27,7 @@ internal class Logger(
         }
     }
 
-    private fun buildEntry(closure: LogEntryBuilder.() -> Unit) = try {
+    internal fun buildEntry(closure: LogEntryBuilder.() -> Unit) = try {
         val builder = LogEntryBuilder(options.logLevel)
         closure(builder)
         builder.build().apply {

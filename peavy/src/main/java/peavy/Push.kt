@@ -11,6 +11,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import peavy.options.PeavyOptions
 import java.io.File
 import kotlin.time.Duration.Companion.minutes
@@ -95,6 +96,25 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
         }
         return response?.use {
             Debug.log("Log ${file.name} pushed: ${it.code}")
+            true
+        } ?: false
+    }
+
+    internal fun push(entry: LogEntry): Boolean {
+        val json = entry.toJson().toString()
+        Debug.log("Pushing entry, size ${json.length}")
+        val request = Request.Builder()
+            .url(options.endpoint)
+            .header("Peavy-Log", "true")
+            .post(json.toRequestBody(ndjson))
+            .build()
+        val response = try {
+            okHttp.newCall(request).execute()
+        } catch (e: Exception) {
+            null
+        }
+        return response?.use {
+            Debug.log("Log entry pushed: ${it.code}")
             true
         } ?: false
     }
