@@ -58,6 +58,8 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
     }
 
     private suspend fun prepare(): Boolean {
+        storage.flush()
+
         return if (storage.hasCurrentEntries()) {
             try {
                 storage.endCurrentFile()

@@ -54,6 +54,36 @@ internal class Storage(context: Context) {
         unsafeFlush()
     }
 
+    suspend fun flush() {
+        val entries = bufferMutex.withLock {
+            val entries = buffer.toList()
+            buffer.clear()
+            entries
+        }
+        if (entries.isEmpty()) return
+
+        Debug.log("Flushing ${entries.size} log entries")
+
+        if (directory.usableSpace < MIN_AVAILABLE_SPACE) {
+            Debug.warn("Not enough available space, dropping")
+            return
+        }
+
+        currentMutex.withLock {
+            try {
+                FileWriter(requireCurrentFile(), true).use {
+                    for (entry in entries) {
+                        it.write(entry.toJson().toString())
+                        it.write("\n")
+                    }
+                    Debug.log("Flushed ${entries.size} entries")
+                }
+            } catch (e: Exception) {
+                Debug.warn("Error flushing", e)
+            }
+        }
+    }
+
     suspend fun hasCurrentEntries(): Boolean {
         currentMutex.withLock {
             return currentFile.exists() && currentFile.length() > 50
@@ -113,36 +143,6 @@ internal class Storage(context: Context) {
                 it.write("\n")
             }
             Debug.log("Flushed ${entries.size} entries")
-        }
-    }
-
-    private suspend fun flush() {
-        val entries = bufferMutex.withLock {
-            val entries = buffer.toList()
-            buffer.clear()
-            entries
-        }
-        if (entries.isEmpty()) return
-
-        Debug.log("Flushing ${entries.size} log entries")
-
-        if (directory.usableSpace < MIN_AVAILABLE_SPACE) {
-            Debug.warn("Not enough available space, dropping")
-            return
-        }
-
-        currentMutex.withLock {
-            try {
-                FileWriter(requireCurrentFile(), true).use {
-                    for (entry in entries) {
-                        it.write(entry.toJson().toString())
-                        it.write("\n")
-                    }
-                    Debug.log("Flushed ${entries.size} entries")
-                }
-            } catch (e: Exception) {
-                Debug.warn("Error flushing", e)
-            }
         }
     }
 
