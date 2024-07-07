@@ -8,7 +8,7 @@ android {
     namespace = "peavy"
     compileSdk = 34
 
-    version = "0.9.7"
+    version = "0.9.8"
 
     defaultConfig {
         minSdk = 21
