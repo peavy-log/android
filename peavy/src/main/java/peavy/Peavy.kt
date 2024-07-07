@@ -1,7 +1,12 @@
 package peavy
 
+import android.app.Activity
+import android.app.Application
+import android.app.Application.ActivityLifecycleCallbacks
+import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Bundle
 import peavy.constants.LogLevel
 import peavy.exceptions.Internal
 import peavy.options.PeavyOptions
@@ -11,6 +16,7 @@ object Peavy {
     internal lateinit var storage: Storage
     internal lateinit var push: Push
     private lateinit var prefs: SharedPreferences
+    private lateinit var lifecycle: LifecycleListener
 
     var isInitialized: Boolean = false
         private set
@@ -22,6 +28,7 @@ object Peavy {
         storage = Storage(context)
         logger = Logger(context, options, storage)
         push = Push(options, storage)
+        lifecycle = LifecycleListener(context)
 
         Internal.attachUncaughtHandler()
         restoreMeta()

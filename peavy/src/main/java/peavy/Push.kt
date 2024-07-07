@@ -6,6 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -20,7 +22,8 @@ import kotlin.time.toJavaDuration
 
 internal class Push(private val options: PeavyOptions, private val storage: Storage) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    private var pusher = CoroutineScope(Dispatchers.IO.limitedParallelism(1))
+    private val pusher = CoroutineScope(Dispatchers.IO.limitedParallelism(1))
+    private val pushMutex = Mutex()
 
     private var okHttp: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(10.seconds.toJavaDuration())
@@ -33,19 +36,24 @@ internal class Push(private val options: PeavyOptions, private val storage: Stor
         pusher.launch {
             while (true) {
                 delay(options.pushInterval)
-
-                try {
-                    withTimeout(1.minutes) {
-                        if (prepare()) {
-                            pushFiles()
-                        }
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    Debug.warn("Timeout pushing")
-                }
+                prepareAndPush()
             }
         }.invokeOnCompletion {
             Debug.log("Pusher coroutine ended, $it")
+        }
+    }
+
+    internal suspend fun prepareAndPush() {
+        pushMutex.withLock {
+            try {
+                withTimeout(1.minutes) {
+                    if (prepare()) {
+                        pushFiles()
+                    }
+                }
+            } catch (e: TimeoutCancellationException) {
+                Debug.warn("Timeout pushing")
+            }
         }
     }
 
