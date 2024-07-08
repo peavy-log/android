@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import peavy.constants.LogLevel
 import java.time.Instant
+import java.util.Locale
 
 internal object Debug {
     var enabled: Boolean = false
@@ -49,5 +50,15 @@ internal object Debug {
     fun log(message: String, throwable: Throwable? = null) {
         if (!enabled) return
         Log.d("Peavy", message, throwable)
+    }
+
+    fun formatSize(size: Long): String {
+        if (size < 1024) return "$size B"
+        val z = (63 - size.countLeadingZeroBits()) / 10
+        return String.format(
+            Locale.ENGLISH,
+            "%.1f %sB", size.toDouble() / (1L shl (z * 10)),
+            " KMGTPE"[z]
+        )
     }
 }

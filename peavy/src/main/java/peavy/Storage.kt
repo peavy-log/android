@@ -65,7 +65,10 @@ internal class Storage(context: Context) {
         Debug.log("Flushing ${entries.size} log entries")
 
         if (directory.usableSpace < MIN_AVAILABLE_SPACE) {
-            Debug.warnSome("Not enough available space, dropping ${entries.size} entries")
+            val usable = Debug.formatSize(directory.usableSpace)
+            val free = Debug.formatSize(directory.freeSpace)
+            val total = Debug.formatSize(directory.totalSpace)
+            Debug.warnSome("Not enough available space (usable=$usable, free=$free, total=$total), dropping ${entries.size} entries")
             return
         }
 
