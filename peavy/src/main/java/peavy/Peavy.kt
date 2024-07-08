@@ -1,15 +1,12 @@
 package peavy
 
-import android.app.Activity
-import android.app.Application
-import android.app.Application.ActivityLifecycleCallbacks
-import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Bundle
 import peavy.constants.LogLevel
 import peavy.exceptions.Internal
 import peavy.options.PeavyOptions
+import java.net.URL
+import kotlin.time.Duration
 
 object Peavy {
     internal lateinit var logger: Logger
@@ -34,6 +31,20 @@ object Peavy {
         restoreMeta()
 
         isInitialized = true
+    }
+
+    fun setOptions(
+        endpoint: URL? = null,
+        logLevel: LogLevel? = null,
+        pushInterval: Duration? = null
+    ) {
+        push.options = push.options.copy(
+            endpoint = endpoint ?: push.options.endpoint,
+            pushInterval = pushInterval ?: push.options.pushInterval
+        )
+        logger.options = logger.options.copy(
+            logLevel = logLevel ?: logger.options.logLevel
+        )
     }
 
     fun clearMeta() {

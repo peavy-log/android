@@ -9,7 +9,7 @@ import peavy.options.PeavyOptions
 
 internal class Logger(
     context: Context,
-    private val options: PeavyOptions,
+    var options: PeavyOptions,
     private val storage: Storage,
 ) {
     val meta = mutableMapOf<String, Any?>()

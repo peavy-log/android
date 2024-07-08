@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
-internal class Push(private val options: PeavyOptions, private val storage: Storage) {
+internal class Push(var options: PeavyOptions, private val storage: Storage) {
     @OptIn(ExperimentalCoroutinesApi::class)
     private val pusher = CoroutineScope(Dispatchers.IO.limitedParallelism(1))
     private val pushMutex = Mutex()
