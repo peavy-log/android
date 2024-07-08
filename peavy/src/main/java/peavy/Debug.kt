@@ -5,11 +5,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import peavy.constants.LogLevel
+import java.time.Instant
 
 internal object Debug {
     var enabled: Boolean = false
 
     private val warnScope = CoroutineScope(Dispatchers.IO)
+    private var lastSomeWarn = Instant.ofEpochSecond(0)
+
+    fun warnSome(message: String, throwable: Throwable? = null) {
+        if (lastSomeWarn.isAfter(Instant.now().minusSeconds(60))) {
+            return
+        }
+        lastSomeWarn = Instant.now()
+        warn(message, throwable)
+    }
 
     fun warn(message: String, throwable: Throwable? = null) {
         warnScope.launch {

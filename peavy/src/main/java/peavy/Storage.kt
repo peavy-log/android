@@ -65,7 +65,7 @@ internal class Storage(context: Context) {
         Debug.log("Flushing ${entries.size} log entries")
 
         if (directory.usableSpace < MIN_AVAILABLE_SPACE) {
-            Debug.warn("Not enough available space, dropping")
+            Debug.warnSome("Not enough available space, dropping ${entries.size} entries")
             return
         }
 
@@ -79,7 +79,7 @@ internal class Storage(context: Context) {
                     Debug.log("Flushed ${entries.size} entries")
                 }
             } catch (e: Exception) {
-                Debug.warn("Error flushing", e)
+                Debug.warnSome("Error flushing", e)
             }
         }
     }
