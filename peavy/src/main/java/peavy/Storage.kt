@@ -3,7 +3,6 @@ package peavy
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -15,6 +14,34 @@ import java.util.zip.GZIPOutputStream
 import kotlin.time.Duration.Companion.seconds
 
 
+private class Buffer<T> {
+    private var currentBuffer: Int = 1
+    private val buffer1 = mutableListOf<T>()
+    private val buffer2 = mutableListOf<T>()
+
+    @Synchronized
+    fun retrieve(): List<T> {
+        val current = currentBuffer
+        currentBuffer = when (currentBuffer) {
+            1 -> 2
+            2 -> 1
+            else -> 1
+        }
+        return when (current) {
+            1 -> buffer1.toList().also { buffer1.clear() }
+            2 -> buffer2.toList().also { buffer2.clear() }
+            else -> emptyList()
+        }
+    }
+
+    fun add(entry: T) {
+        when (currentBuffer) {
+            1 -> buffer1.add(entry)
+            2 -> buffer2.add(entry)
+        }
+    }
+}
+
 internal class Storage(context: Context) {
     companion object {
         const val MIN_AVAILABLE_SPACE = 768 * 1024 * 1024 // 768 MB
@@ -23,7 +50,6 @@ internal class Storage(context: Context) {
     }
 
     private val currentMutex = Mutex()
-    private val bufferMutex = Mutex()
     private val endedMutex = Mutex()
 
     private val directory = File(context.filesDir, ".peavy").also {
@@ -31,10 +57,8 @@ internal class Storage(context: Context) {
     }
 
     private var currentFile = File(directory, "current")
-    private val buffer = mutableListOf<LogEntry>()
+    private val buffer = Buffer<LogEntry>()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private var saver = CoroutineScope(Dispatchers.IO.limitedParallelism(1))
     private var compactor = CoroutineScope(Dispatchers.IO)
 
     init {
@@ -42,11 +66,9 @@ internal class Storage(context: Context) {
         compacter()
     }
 
-    fun storeEntry(logEntry: LogEntry) = saver.launch {
-        bufferMutex.withLock {
-            buffer.add(logEntry)
-            Debug.log("Stored $logEntry to buffer")
-        }
+    fun storeEntry(logEntry: LogEntry) {
+        buffer.add(logEntry)
+        Debug.log("Stored $logEntry to buffer")
     }
 
     fun flushImmediately() {
@@ -55,11 +77,7 @@ internal class Storage(context: Context) {
     }
 
     suspend fun flush() {
-        val entries = bufferMutex.withLock {
-            val entries = buffer.toList()
-            buffer.clear()
-            entries
-        }
+        val entries = buffer.retrieve()
         if (entries.isEmpty()) return
 
         Debug.log("Flushing ${entries.size} log entries")
@@ -76,6 +94,8 @@ internal class Storage(context: Context) {
             try {
                 FileWriter(requireCurrentFile(), true).use {
                     for (entry in entries) {
+                        @Suppress("SENSELESS_COMPARISON")
+                        if (entry == null) continue // Protects against a (real world) potential crash
                         it.write(entry.toJson().toString())
                         it.write("\n")
                     }
@@ -127,19 +147,16 @@ internal class Storage(context: Context) {
     private fun flusher() = compactor.launch {
         while (true) {
             delay(5.seconds)
-            if (buffer.size != 0) {
-                flush()
-            }
+            flush()
         }
     }.invokeOnCompletion {
         unsafeFlush()
     }
 
     private fun unsafeFlush() {
-        val entries = buffer.toList()
+        val entries = buffer.retrieve()
         Debug.log("Flushing unsafe size=${entries.size}")
         if (entries.isEmpty()) return
-        buffer.clear()
         FileWriter(requireCurrentFile(), true).use {
             for (entry in entries) {
                 it.write(entry.toJson().toString())
