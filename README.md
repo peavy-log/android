@@ -19,7 +19,7 @@ Remote logger and tracer library for Android.
 
     ```groovy
     dependencies {
-         implementation 'com.github.peavy-log:android:0.9.13'
+         implementation 'com.github.peavy-log:android:0.9.14'
     }
     ```
 
