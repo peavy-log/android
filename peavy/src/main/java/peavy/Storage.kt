@@ -16,8 +16,8 @@ import kotlin.time.Duration.Companion.seconds
 
 private class Buffer<T> {
     private var currentBuffer: Int = 1
-    private val buffer1 = mutableListOf<T>()
-    private val buffer2 = mutableListOf<T>()
+    private val buffer1 = ArrayList<T>(500)
+    private val buffer2 = ArrayList<T>(500)
 
     @Synchronized
     fun retrieve(): List<T> {
@@ -35,9 +35,13 @@ private class Buffer<T> {
     }
 
     fun add(entry: T) {
-        when (currentBuffer) {
-            1 -> buffer1.add(entry)
-            2 -> buffer2.add(entry)
+        try {
+            when (currentBuffer) {
+                1 -> buffer1.add(entry)
+                2 -> buffer2.add(entry)
+            }
+        } catch (e: Exception) {
+            Debug.warnSome("Failed adding entry to buffer", e)
         }
     }
 }
