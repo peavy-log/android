@@ -27,7 +27,9 @@ object Peavy {
         push = Push(options, storage)
         lifecycle = LifecycleListener(context)
 
-        Internal.attachUncaughtHandler()
+        if (options.attachUncaughtHandler) {
+            Internal.attachUncaughtHandler()
+        }
         restoreMeta()
 
         isInitialized = true

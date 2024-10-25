@@ -50,6 +50,14 @@ data class PeavyOptions(
     val maxHistoricalStorage: HistoricalStorage = HistoricalStorage(
         time = 7.days
     ),
+    /**
+     * Attach a handler for uncaught exceptions to immediately flush logs up to and
+     * including the crash. It's not turned on by default because f.ex. Crashlytics
+     * is usually installed too, and does it better.
+     *
+     * Default: false
+     */
+    val attachUncaughtHandler: Boolean = false,
 ) {
     data class HistoricalStorage(
         /**
