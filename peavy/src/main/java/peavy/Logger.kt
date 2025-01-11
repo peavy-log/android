@@ -60,7 +60,9 @@ internal class Logger(
                 put("app-version-code", appVersion.second)
             }
             put("device-model", "${Build.MANUFACTURER} ${Build.MODEL}")
-            put("device-language", context.resources.configuration.locale.let { "${it.language}-${it.country}" })
+            put(
+                "device-language",
+                context.resources.configuration.locale.let { "${it.language}-${it.country}" })
             put("device-screen-w", context.resources.configuration.screenWidthDp)
             put("device-screen-h", context.resources.configuration.screenHeightDp)
         }
@@ -69,7 +71,7 @@ internal class Logger(
     private fun getAppVersion(context: Context): Pair<String, Int>? {
         return try {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            Pair(info.versionName, info.versionCode)
+            Pair(info.versionName ?: "unknown", info.versionCode)
         } catch (e: Exception) {
             Debug.warn("Error fetching app info", e)
             null

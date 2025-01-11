@@ -99,7 +99,11 @@ internal class Push(var options: PeavyOptions, private val storage: Storage) {
             .post(file.asRequestBody(ndjson))
             .build()
         val response = try {
-            okHttp.newCall(request).execute()
+            okHttp.newCall(request).execute().also {
+                if (it.code >= 400) {
+                    throw Exception("Push error: ${it.code}")
+                }
+            }
         } catch (e: Exception) {
             Debug.warn("Error pushing log file ${file.name}", e)
             null
@@ -119,7 +123,11 @@ internal class Push(var options: PeavyOptions, private val storage: Storage) {
             .post(json.toRequestBody(ndjson))
             .build()
         val response = try {
-            okHttp.newCall(request).execute()
+            okHttp.newCall(request).execute().also {
+                if (it.code >= 400) {
+                    throw Exception("Push error: ${it.code}")
+                }
+            }
         } catch (e: Exception) {
             null
         }

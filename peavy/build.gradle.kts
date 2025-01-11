@@ -6,9 +6,9 @@ plugins {
 
 android {
     namespace = "peavy"
-    compileSdk = 34
+    compileSdk = 35
 
-    version = "0.9.16"
+    version = "0.9.17"
 
     defaultConfig {
         minSdk = 21
@@ -42,7 +42,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0"
 }
 
 publishing {
