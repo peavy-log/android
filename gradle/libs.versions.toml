@@ -1,10 +1,10 @@
 [versions]
 agp = "8.8.0"
 desugar = "2.1.4"
-kotlin = "2.1.0"
+kotlin = "1.9.22"
 okhttp = "4.12.0"
 coreKtx = "1.13.1"
-kotlinxCoro = "1.10.1"
+kotlinxCoro = "1.9.0"
 timber = "5.0.1"
 
 [libraries]
