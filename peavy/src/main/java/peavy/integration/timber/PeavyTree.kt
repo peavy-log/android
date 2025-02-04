@@ -5,10 +5,15 @@ import peavy.Peavy
 import timber.log.Timber
 
 class PeavyTree : Timber.Tree() {
-    private fun formatLogMessage(message: String, vararg args: Any?) = if (args.isNotEmpty()) {
-        message.format(args)
-    } else {
-        message
+    private fun formatLogMessage(message: String, vararg args: Any?) = try {
+        if (args.isNotEmpty()) {
+            message.format(args)
+        } else {
+            message
+        }
+    } catch (e: Exception) {
+        Log.e("PeavyTree", "Error formatting log message: $message", e)
+        "<unknown message, formatting error>"
     }
 
     override fun v(t: Throwable?) = Peavy.t(t?.message ?: "<empty>", t)
