@@ -6,6 +6,7 @@ import android.util.Log
 import peavy.constants.LogLevel
 import peavy.exceptions.VerbosityException
 import peavy.options.PeavyOptions
+import java.util.UUID
 
 internal class Logger(
     context: Context,
@@ -13,10 +14,12 @@ internal class Logger(
     private val storage: Storage,
 ) {
     val meta = mutableMapOf<String, Any?>()
-    private val labels = mutableMapOf<String, Any?>()
+    private val logLabels = mutableMapOf<String, Any?>()
+    private val evLabels = mutableMapOf<String, Any?>()
 
     init {
         generateGlobalLabels(context)
+        resetSessionId()
     }
 
     fun log(closure: LogEntryBuilder.() -> Unit) {
@@ -31,7 +34,12 @@ internal class Logger(
         val builder = LogEntryBuilder(options.logLevel)
         closure(builder)
         builder.build().apply {
-            labels.putAll(this@Logger.labels)
+            if (builder.json?.get("__peavy_type") == "event") {
+                labels.putAll(this@Logger.evLabels)
+            } else {
+                labels.putAll(this@Logger.logLabels)
+
+            }
             labels.putAll(this@Logger.meta)
         }
     } catch (e: VerbosityException) {
@@ -50,7 +58,7 @@ internal class Logger(
     private fun generateGlobalLabels(context: Context) {
         val appVersion = getAppVersion(context)
 
-        labels.apply {
+        logLabels.apply {
             put("peavy-version", BuildConfig.VERSION)
             put("platform", "android")
             put("platform-version", Build.VERSION.SDK_INT)
@@ -65,6 +73,21 @@ internal class Logger(
                 context.resources.configuration.locale.let { "${it.language}-${it.country}" })
             put("device-screen-w", context.resources.configuration.screenWidthDp)
             put("device-screen-h", context.resources.configuration.screenHeightDp)
+        }
+        evLabels.apply {
+            put("platform", "android")
+            put("app-id", context.packageName)
+        }
+    }
+
+    internal fun resetSessionId() {
+        val id = UUID.randomUUID().toString().replace("-", "").take(24)
+        Debug.log("Reset session id to $id")
+        logLabels.apply {
+            put("session-id", id)
+        }
+        evLabels.apply {
+            put("session-id", id)
         }
     }
 

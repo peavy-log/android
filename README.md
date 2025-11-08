@@ -19,7 +19,7 @@ Remote logger and tracer library for Android.
 
     ```groovy
     dependencies {
-         implementation 'com.github.peavy-log:android:0.9.19'
+         implementation 'com.github.peavy-log:android:0.10.0'
     }
     ```
 
@@ -79,13 +79,39 @@ Peavy.log {
 
 `someExpensiveMessage()` will not be executed unless the global log level is `Trace`. 
 
+### Events
+
+Events are stored as instantaneous values in a dedicated metric database instead of as log lines.
+
+The simplest way to emit events is to use `.action()`:
+
+```kotlin
+Peavy.action(category = "app", name = "launch")
+```
+
+For more options, use the more generic `.ev()`:
+
+```kotlin
+Peavy.ev(
+    type = EventType.Action,
+    category = "interaction",
+    name = "tap",
+    ident = "start_button",
+    duration = 1.seconds,
+    result = EventResult.Success
+)
+```
+
 ### Metadata
 
-To automatically add metadata to log lines, use `Peavy.setMeta()`:
+To automatically add metadata to logs and events, use `Peavy.setMeta()`:
 
 ```kotlin
 Peavy.setMeta("userId" to myUser.id)
 ```
+
+Note that keys like "user" and "id" are filtered out from event data,
+to avoid storing overly identifying - and in general unique - information. 
 
 ### Network Traces
 

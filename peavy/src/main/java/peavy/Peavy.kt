@@ -33,6 +33,8 @@ object Peavy {
         restoreMeta()
 
         isInitialized = true
+
+        sendState(context)
     }
 
     fun setOptions(
