@@ -77,6 +77,9 @@ internal class Logger(
         evLabels.apply {
             put("platform", "android")
             put("app-id", context.packageName)
+            if (appVersion != null) {
+                put("app-version-code", appVersion.second)
+            }
         }
     }
 
